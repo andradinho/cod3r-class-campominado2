@@ -6,4 +6,5 @@
 .project
 /.project
 *.project
-*.classpath
+*.classpathbin
+bin
