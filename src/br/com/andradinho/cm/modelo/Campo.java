@@ -24,6 +24,10 @@ public class Campo {
 		observadores.add(observador);
 	}
 	
+	private void notificarObservadores(CampoEvento evento) {
+		observadores.stream()
+			.forEach(o -> o.eventoOcorreu(this, evento));
+	}
 	
 	boolean adicionarVizinho(Campo vizinho) {
 		boolean linhaDiferente = linha != vizinho.linha;
@@ -48,17 +52,24 @@ public class Campo {
 	void alternarMarcacao() {
 		if(!aberto) {
 			marcado = !marcado;
+			
+			if(marcado) {
+				notificarObservadores(CampoEvento.MARCAR);
+			} else {
+				notificarObservadores(CampoEvento.DESMARCAR);
+			}
 		}
 	}
 	
 	boolean abrir() {
 		
 		if(!aberto && !marcado) {
-			aberto = true;
-			
 			if(minado) {
-				// TODO Implementar nova versão
+				notificarObservadores(CampoEvento.EXPLODIR);
+				return true;
 			}
+
+			setAberto(true);
 			
 			if(vizinhancaSegura()) {
 				vizinhos.forEach(v -> v.abrir());
@@ -89,6 +100,10 @@ public class Campo {
 	
 	void setAberto(boolean aberto) {
 		this.aberto = aberto;
+		
+		if(aberto) {
+			notificarObservadores(CampoEvento.ABRIR);
+		}
 	}
 
 	public boolean isAberto() {
